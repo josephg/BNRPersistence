@@ -29,6 +29,8 @@
 		93F00FA90D259A6500410C0E /* GRLGraph.m in Sources */ = {isa = PBXBuildFile; fileRef = 93F00FA30D259A6500410C0E /* GRLGraph.m */; };
 		93F00FAA0D259A6500410C0E /* GRLGraphView.m in Sources */ = {isa = PBXBuildFile; fileRef = 93F00FA50D259A6500410C0E /* GRLGraphView.m */; };
 		93F00FAB0D259A6500410C0E /* GRLNode.m in Sources */ = {isa = PBXBuildFile; fileRef = 93F00FA70D259A6500410C0E /* GRLNode.m */; };
+		FD3DF394117047D00025E63E /* BNRCrypto.m in Sources */ = {isa = PBXBuildFile; fileRef = FD3DF393117047D00025E63E /* BNRCrypto.m */; };
+		FD3DF3A7117048060025E63E /* libcrypto.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = FD3DF3A6117048060025E63E /* libcrypto.dylib */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -76,6 +78,9 @@
 		93F00FA50D259A6500410C0E /* GRLGraphView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GRLGraphView.m; sourceTree = SOURCE_ROOT; };
 		93F00FA60D259A6500410C0E /* GRLNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GRLNode.h; sourceTree = SOURCE_ROOT; };
 		93F00FA70D259A6500410C0E /* GRLNode.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GRLNode.m; sourceTree = SOURCE_ROOT; };
+		FD3DF392117047D00025E63E /* BNRCrypto.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = BNRCrypto.h; path = ../BNRPersistence/BNRCrypto.h; sourceTree = SOURCE_ROOT; };
+		FD3DF393117047D00025E63E /* BNRCrypto.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = BNRCrypto.m; path = ../BNRPersistence/BNRCrypto.m; sourceTree = SOURCE_ROOT; };
+		FD3DF3A6117048060025E63E /* libcrypto.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libcrypto.dylib; path = usr/lib/libcrypto.dylib; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -85,6 +90,7 @@
 			files = (
 				8D15AC340486D014006FF6A4 /* Cocoa.framework in Frameworks */,
 				93DC92EB0FB63FBC0051F072 /* libtokyocabinet.a in Frameworks */,
+				FD3DF3A7117048060025E63E /* libcrypto.dylib in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -126,6 +132,7 @@
 				2A37F4B8FDCFA73011CA2CEA /* Resources */,
 				2A37F4C3FDCFA73011CA2CEA /* Frameworks */,
 				19C28FB0FE9D524F11CA2CBB /* Products */,
+				FD3DF3A6117048060025E63E /* libcrypto.dylib */,
 			);
 			name = PersistenceTest;
 			sourceTree = "<group>";
@@ -201,6 +208,8 @@
 				93F00F750D259A1100410C0E /* BNRClassMetaData.h */,
 				93F00F760D259A1100410C0E /* BNRClassMetaData.m */,
 				93F00F730D259A1100410C0E /* BNRClassDictionary.h */,
+				FD3DF392117047D00025E63E /* BNRCrypto.h */,
+				FD3DF393117047D00025E63E /* BNRCrypto.m */,
 			);
 			name = "Private Classes";
 			sourceTree = "<group>";
@@ -295,6 +304,7 @@
 				934ECF271116390700F8C0E5 /* BNRClassDictionary.mm in Sources */,
 				934ECF2D1116397100F8C0E5 /* BNRTCBackend.mm in Sources */,
 				934ECF2E1116397100F8C0E5 /* BNRUniquingTable.m in Sources */,
+				FD3DF394117047D00025E63E /* BNRCrypto.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
