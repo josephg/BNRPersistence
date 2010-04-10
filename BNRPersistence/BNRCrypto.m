@@ -23,6 +23,6 @@ void BNRRandomBytes(void *buffer, int length)
 
 void BNRRandomBytes(void *buffer, int length)
 {
-    RAND_pseudo_bytes((UInt8*)buffer, length);
+    RAND_pseudo_bytes((unsigned char *)buffer, length);
 }
 #endif
