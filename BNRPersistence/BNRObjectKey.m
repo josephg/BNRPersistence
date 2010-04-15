@@ -41,10 +41,12 @@ BNRObjectKey BNRMakeKeyFromBytes(const void *data, UInt32 length)
         };
     } else if (length == sizeof(UInt32)) {
         // Pack the data into the length field.
-        return (BNRObjectKey) {
+        BNRObjectKey key = {
             NULL,
             *((UInt32 *)data)
         };
+        free((void *) data);
+        return key;
     } else {
         BNRObjectKey key = {
             malloc(length),

@@ -195,7 +195,7 @@
                                    autorelease];
 
     BNRObjectKey rowKey;
-    while (0 != BNRKeyRowId((rowKey = [cursor nextBuffer:buffer])))
+    while (!BNRKeyIsNull((rowKey = [cursor nextBuffer:buffer])))
     {
         if (kBNRMetadataRowID == BNRKeyRowId(rowKey)) continue;  // skip metadata
 
@@ -214,6 +214,8 @@
             [storedObject readContentFromBuffer:buffer];
             [storedObject setHasContent:YES];
         }
+        
+        BNRFreeKey(rowKey);
      }
     return allObjects;
 }
@@ -233,7 +235,7 @@
                                    autorelease];
     
     BNRObjectKey rowKey;
-    while (0 != BNRKeyRowId((rowKey = [cursor nextBuffer:buffer])))
+    while (!BNRKeyIsNull((rowKey = [cursor nextBuffer:buffer])))
     {
         if (kBNRMetadataRowID == BNRKeyRowId(rowKey)) continue;  // skip metadata
         
@@ -257,6 +259,8 @@
         
         BOOL stop = NO;
         iterBlock(rowKey, storedObject, &stop);
+        
+        BNRFreeKey(rowKey);
         
         [pool drain];
         
