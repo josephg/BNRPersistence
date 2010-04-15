@@ -38,7 +38,9 @@
 @interface BNRStoredObject (BNRStoreFriend)
 
 - (void)setHasContent:(BOOL)yn;
-- (id)initWithStore:(BNRStore *)s rowID:(UInt32)n buffer:(BNRDataBuffer *)buffer;
+- (id)initWithStore:(BNRStore *)s
+             rowKey:(BNRObjectKey)k
+             buffer:(BNRDataBuffer *)buffer;
 
 @end
 
@@ -106,7 +108,9 @@
     classes[classCount] = c;
 }
 
-- (BOOL)decryptBuffer:(BNRDataBuffer *)buffer ofClass:(Class)c rowID:(UInt32)rowID
+- (BOOL)decryptBuffer:(BNRDataBuffer *)buffer
+              ofClass:(Class)c
+               rowKey:(BNRObjectKey)key
 {
     if (buffer == nil)
         return YES;
@@ -115,15 +119,17 @@
     
     UInt32 salt[2];
     memcpy(salt, [metaData encryptionKeySalt], 8);
-    salt[1] = salt[1] ^ rowID;
+    salt[1] = salt[1] ^ key.length;
     
     return [buffer decryptWithKey:encryptionKey salt:salt];
 }
-- (void)encryptBuffer:(BNRDataBuffer *)buffer ofClass:(Class)c rowID:(UInt32)rowID
+- (void)encryptBuffer:(BNRDataBuffer *)buffer
+              ofClass:(Class)c
+               rowKey:(BNRObjectKey)key
 {
     UInt32 salt[2];
     memcpy(salt, [[self metaDataForClass:c] encryptionKeySalt], 8);
-    salt[1] = salt[1] ^ rowID;
+    salt[1] = salt[1] ^ key.length;
     [buffer encryptWithKey:encryptionKey salt:salt]; // does not encrypt if encryptionKey is empty.
 }
 
@@ -133,14 +139,29 @@
                               rowID:(UInt32)n 
                        fetchContent:(BOOL)mustFetch
 {
-    
-    // Try to find it in the uniquing table
-    BNRStoredObject *obj = [uniquingTable objectForClass:c rowID:n];
+    return [self objectForClass:c
+                         rowKey:BNRMakeKeyFromId(n)
+                   fetchContent:mustFetch];
+}
 
+//- (BNRStoredObject *)objectForClass:(Class)c 
+//                            rowName:(NSString *)key
+//                       fetchContent:(BOOL)yn
+//{
+//    return [self objectForClass:c keyData:[key UTF8String] length:[key length] fetchContent:yn];
+//}
+
+- (BNRStoredObject *)objectForClass:(Class)c 
+                             rowKey:(BNRObjectKey)key
+                       fetchContent:(BOOL)mustFetch
+{
+    // Try to find it in the uniquing table
+    BNRStoredObject *obj = [uniquingTable objectForClass:c rowKey:key];
+    
     if (obj) {
         if (mustFetch && ![obj hasContent]) {
-            BNRDataBuffer *const d = [backend dataForClass:c rowID:n];
-            [self decryptBuffer:d ofClass:c rowID:n];
+            BNRDataBuffer *const d = [backend dataForClass:c rowKey:key];
+            [self decryptBuffer:d ofClass:c rowKey:key];
             if (usesPerInstanceVersioning) {
                 [d consumeVersion];
             }
@@ -148,16 +169,17 @@
             [obj setHasContent:YES];
         }
     } else {
-        BNRDataBuffer *const d = mustFetch? [backend dataForClass:c rowID:n] : nil;
-        [self decryptBuffer:d ofClass:c rowID:n];
+        BNRDataBuffer *const d = mustFetch? [backend dataForClass:c rowKey:key] : nil;
+        [self decryptBuffer:d ofClass:c rowKey:key];
         if (usesPerInstanceVersioning) {
             [d consumeVersion];
         }
-        obj = [[[c alloc] initWithStore:self rowID:n buffer:d] autorelease];
-        [uniquingTable setObject:obj forClass:c rowID:n];
+        obj = [[[c alloc] initWithStore:self rowKey:key buffer:d] autorelease];
+        [uniquingTable setObject:obj forClass:c rowKey:key];
     }
     return obj;
 }
+
 
 - (NSMutableArray *)allObjectsForClass:(Class)c
 {
@@ -172,20 +194,20 @@
                                     initWithCapacity:(UINT16_MAX + 1)]
                                    autorelease];
 
-    UInt32 rowID;
-    while (rowID = [cursor nextBuffer:buffer])
+    BNRObjectKey rowKey;
+    while (0 != BNRKeyRowId((rowKey = [cursor nextBuffer:buffer])))
     {
-        if (kBNRMetadataRowID == rowID) continue;  // skip metadata
+        if (kBNRMetadataRowID == BNRKeyRowId(rowKey)) continue;  // skip metadata
 
         // Get the next object.
         BNRStoredObject *storedObject = [self objectForClass:c
-                                                       rowID:rowID
+                                                      rowKey:rowKey
                                                 fetchContent:NO];
         [allObjects addObject:storedObject];
         // Possibly read in its stored data.
         const BOOL hasUnsavedData = [toBeUpdated containsObject:storedObject];
         if (!hasUnsavedData) {
-            [self decryptBuffer:buffer ofClass:c rowID:rowID];
+            [self decryptBuffer:buffer ofClass:c rowKey:rowKey];
             if (usesPerInstanceVersioning) {
                 [buffer consumeVersion];
             }
@@ -210,22 +232,22 @@
                                     initWithCapacity:(UINT16_MAX + 1)]
                                    autorelease];
     
-    UInt32 rowID;
-    while (rowID = [cursor nextBuffer:buffer])
+    BNRObjectKey rowKey;
+    while (0 != BNRKeyRowId((rowKey = [cursor nextBuffer:buffer])))
     {
-        if (kBNRMetadataRowID == rowID) continue;  // skip metadata
+        if (kBNRMetadataRowID == BNRKeyRowId(rowKey)) continue;  // skip metadata
         
         // Prevent our usage from building up while iterating over the objects:
         NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
         
         // Get the next object.
         BNRStoredObject *storedObject = [self objectForClass:c
-                                                       rowID:rowID
+                                                      rowKey:rowKey
                                                 fetchContent:NO];
         // Possibly read in its stored data.
         const BOOL hasUnsavedData = [toBeUpdated containsObject:storedObject];
         if (!hasUnsavedData) {
-            [self decryptBuffer:buffer ofClass:c rowID:rowID];
+            [self decryptBuffer:buffer ofClass:c rowKey:rowKey];
             if (usesPerInstanceVersioning) {
                 [buffer consumeVersion];
             }
@@ -234,7 +256,7 @@
         }
         
         BOOL stop = NO;
-        iterBlock(rowID, storedObject, &stop);
+        iterBlock(rowKey, storedObject, &stop);
         
         [pool drain];
         
@@ -253,23 +275,23 @@
         return nil;
     }
     
-    UInt32 *indexResult;
+    BNRObjectKey *resultKeys = NULL;
     
     UInt32 rowCount = [indexManager countOfRowsInClass:c 
                                           matchingText:toMatch
                                                 forKey:key
-                                                  list:&indexResult];
+                                                  list:&resultKeys];
     
     NSMutableArray *result = [NSMutableArray array];
     for (UInt32 i = 0; i < rowCount; i++) {
-        UInt32 rowID = indexResult[i];
+        BNRObjectKey rowKey = resultKeys[i];
         BNRStoredObject *obj = [self objectForClass:c 
-                                              rowID:rowID
+                                             rowKey:rowKey
                                        fetchContent:NO];
         [result addObject:obj];
     }
-    if (rowCount > 0) {
-        free(indexResult);
+    if (NULL != resultKeys) {
+        free(resultKeys);
     }
     return result;
 }
@@ -286,17 +308,16 @@
     [obj setStore:self];
     
     Class c = [obj class];
-    UInt32 rowID = [obj rowID];
     
     // Should I really be giving this object
     // a row ID?
-    if (rowID == 0) {
-        rowID = [self nextRowIDForClass:c];
-        [obj setRowID:rowID];
+    if (![obj hasKey]) {
+        UInt32 rowID = [self nextRowIDForClass:c];
+        [obj setRowID:rowID];        
     }
     
     // Put it in the uniquing table
-    [uniquingTable setObject:obj forClass:c rowID:rowID];
+    [uniquingTable setObject:obj];
 
     if (undoManager) {
         [(BNRStore *)[undoManager prepareWithInvocationTarget:self] deleteObject:obj];
@@ -313,13 +334,14 @@
     }
 }
 
-// This insert is used when undoing a delete
-- (void)insertWithRowID:(unsigned)rowID
-                  class:(Class)c
-               snapshot:(BNRDataBuffer *)snap
+// This insert is used when undoing a delete. It frees the key after inserting, so be careful
+// when using it in other contexts.
+- (void)insertWithRowKey:(BNRObjectKey)rowKey
+                   class:(Class)c
+                snapshot:(BNRDataBuffer *)snap
 {
     BNRStoredObject *obj = [self objectForClass:c
-                                          rowID:rowID
+                                         rowKey:rowKey
                                    fetchContent:NO];
     if (usesPerInstanceVersioning) {
         [snap consumeVersion];
@@ -327,6 +349,7 @@
     [obj readContentFromBuffer:snap];
     [self insertObject:obj];
     [obj release];
+    BNRFreeKey(rowKey);
 }
 
 - (void)deleteObject:(BNRStoredObject *)obj
@@ -361,11 +384,11 @@
         [snapshot resetCursor];
         //NSLog(@"snapshot for undo = %@", snapshot);
 
-        unsigned rowID = [obj rowID];
+        BNRObjectKey rowKey = BNRCloneKey([obj rowKey]);
         Class c = [obj class];
-        [[undoManager prepareWithInvocationTarget:self] insertWithRowID:rowID
-                                                                  class:c
-                                                               snapshot:snapshot];
+        [[undoManager prepareWithInvocationTarget:self] insertWithRowKey:rowKey
+                                                                   class:c
+                                                                snapshot:snapshot];
         [snapshot release];
     }
     
@@ -450,7 +473,7 @@
      
     for (BNRStoredObject *obj in toBeInserted) {
         Class c = [obj class];
-        UInt32 rowID = [obj rowID];
+        BNRObjectKey rowKey = [obj rowKey];
         
         if (usesPerInstanceVersioning) {
             [buffer writeVersionForObject:obj];
@@ -458,17 +481,16 @@
         
         [obj writeContentToBuffer:buffer];
         
-        [self encryptBuffer:buffer ofClass:c rowID:rowID]; // does not encrypt if encryptionKey is empty.
+        [self encryptBuffer:buffer ofClass:c rowKey:rowKey]; // does not encrypt if encryptionKey is empty.
         
         [backend insertData:buffer
                    forClass:c
-                      rowID:rowID];
+                     rowKey:rowKey];
         [buffer clearBuffer];
         
         if (indexManager) {
             [indexManager insertObjectInIndexes:obj];
         }
-        
     }
     
     //NSLog(@"updating %d objects", [toBeUpdated count]);
@@ -476,18 +498,18 @@
     // Updates
     for (BNRStoredObject *obj in toBeUpdated) {
         Class c = [obj class];
-        UInt32 rowID = [obj rowID];
+        BNRObjectKey rowKey = [obj rowKey];
         if (usesPerInstanceVersioning) {
             [buffer writeVersionForObject:obj];
         }
         
         [obj writeContentToBuffer:buffer];
         
-        [self encryptBuffer:buffer ofClass:c rowID:rowID]; // does not encrypt if encryptionKey is empty.
+        [self encryptBuffer:buffer ofClass:c rowKey:rowKey]; // does not encrypt if encryptionKey is empty.
         
         [backend updateData:buffer
                    forClass:c
-                      rowID:rowID];
+                     rowKey:rowKey];
         [buffer clearBuffer];
         
         // FIXME: updating all indexes is inefficient
@@ -501,15 +523,15 @@
     //NSLog(@"deleting %d objects", [toBeDeleted count]);
     for (BNRStoredObject *obj in toBeDeleted) {
         Class c = [obj class];
-        UInt32 rowID = [obj rowID];
+        BNRObjectKey rowKey = [obj rowKey];
         
         // Take it out of the uniquing table:
         // Should I remove it from the uniquingTable in deleteObject?
-        [uniquingTable removeObjectForClass:c rowID:rowID];
+        [uniquingTable removeObjectForClass:c rowKey:rowKey];
         [obj setStore:nil];
 
         [backend deleteDataForClass:c
-                              rowID:rowID];
+                             rowKey:rowKey];
         
         if (indexManager) {
             [indexManager deleteObjectFromIndexes:obj];
@@ -530,7 +552,7 @@
 
             [backend updateData:buffer
                        forClass:c
-                          rowID:1];
+                         rowKey:BNRMakeKeyFromId(kBNRMetadataRowID)];
             [buffer clearBuffer];
         }
         i++;
@@ -573,7 +595,7 @@
         md = [[BNRClassMetaData alloc] init];
         BNRDataBuffer *b;
         b = [backend dataForClass:c 
-                            rowID:1];
+                           rowKey:BNRMakeKeyFromId(kBNRMetadataRowID)];
         
         // Did I find meta data in the database?
         if (b) {

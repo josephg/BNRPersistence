@@ -40,14 +40,16 @@
     [super dealloc];
 }
 
-- (void)setObject:(BNRStoredObject *)obj forClass:(Class)c rowID:(UInt32)row
+- (void)setObject:(BNRStoredObject *)obj forClass:(Class)c rowKey:(BNRObjectKey)key
 {
-    UInt32 bucket = (row + (UInt64)c) % tableSize;
+    NSAssert(!BNRKeyIsNull(key), @"key is null?!");
+    
+    UInt32 bucket = (BNRKeyHash(key) + (UInt64)c) % tableSize;
     struct UniquingListNode *ptr = table[bucket];
     struct UniquingListNode *lastPtr = NULL;
     while (ptr != NULL) {
         BNRStoredObject *currentObject = ptr->storedObject;
-        if ([currentObject rowID] == row && [currentObject class] == c) {
+        if (BNREqualsKey(key, [currentObject rowKey])) {
             break;
         }
         lastPtr = ptr;
@@ -67,13 +69,17 @@
     }
 }
 
-- (BNRStoredObject *)objectForClass:(Class)c rowID:(UInt32)row;
+- (void)setObject:(BNRStoredObject *)obj {
+    [self setObject:obj forClass:[obj class] rowKey:[obj rowKey]];
+}
+
+- (BNRStoredObject *)objectForClass:(Class)c rowKey:(BNRObjectKey)key
 {
-    UInt32 bucket = (row + (UInt64)c) % tableSize;
+    UInt32 bucket = (BNRKeyHash(key) + (UInt64)c) % tableSize;
     struct UniquingListNode *ptr = table[bucket];
     while (ptr != NULL) {
         BNRStoredObject *currentObject = ptr->storedObject;
-        if ([currentObject rowID] == row && [currentObject class] == c) {
+        if (BNREqualsKey(key, [currentObject rowKey])) {
             return currentObject;
         }
         ptr = ptr->next;
@@ -81,14 +87,14 @@
     return nil;
 }
 
-- (void)removeObjectForClass:(Class)c rowID:(UInt32)row
+- (void)removeObjectForClass:(Class)c rowKey:(BNRObjectKey)key
 {
-    UInt32 bucket = (row + (UInt64)c) % tableSize;
+    UInt32 bucket = (BNRKeyHash(key) + (UInt64)c) % tableSize;
     struct UniquingListNode *ptr = table[bucket];
     struct UniquingListNode *previousPtr = NULL;
     while (ptr != NULL) {
         BNRStoredObject *currentObject = ptr->storedObject;
-        if ([currentObject rowID] == row && [currentObject class] == c) {
+        if (BNREqualsKey(key, [currentObject rowKey])) {
             break;
         }
         previousPtr = ptr;

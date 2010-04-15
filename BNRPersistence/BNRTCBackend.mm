@@ -24,10 +24,7 @@
 #import "BNRDataBuffer.h"
 #import "BNRTCBackendCursor.h"
 
-
 @implementation BNRTCBackend
-
-
 
 - (id)initWithPath:(NSString *)p error:(NSError **)err;
 {
@@ -129,13 +126,12 @@
     return result;
 }
 
-- (void)insertData:(BNRDataBuffer *)d 
+- (void)insertData:(BNRDataBuffer *)d
           forClass:(Class)c
-             rowID:(UInt32)n
+            rowKey:(BNRObjectKey)key
 {    
     TCHDB *db = [self fileForClass:c];
-    UInt32 key = CFSwapInt32HostToLittle(n);
-    bool successful = tchdbput(db, &key, sizeof(UInt32), [d buffer], [d length]);
+    bool successful = tchdbput(db, BNRKeyData(&key), BNRKeyLength(key), [d buffer], [d length]);
     if (!successful) {
         int ecode = tchdbecode(db);
         NSString *message = [NSString stringWithFormat:@"tchdbput in insertData: %s", tchdberrmsg(ecode)];
@@ -149,12 +145,11 @@
 }
 
 - (void)deleteDataForClass:(Class)c
-                     rowID:(UInt32)n
+                    rowKey:(BNRObjectKey)key
 {
     TCHDB * db = [self fileForClass:c];
-    UInt32 key = CFSwapInt32HostToLittle(n);
     
-    bool successful = tchdbout(db, &key, sizeof(UInt32));
+    bool successful = tchdbout(db, BNRKeyData(&key), BNRKeyLength(key));
     if (!successful) {
         NSLog(@"warning: tried to delete something that wasn't there");
     }
@@ -162,12 +157,11 @@
 
 - (void)updateData:(BNRDataBuffer *)d 
           forClass:(Class)c 
-             rowID:(UInt32)n
+            rowKey:(BNRObjectKey)key
 {
     TCHDB *db = [self fileForClass:c];
-    UInt32 key = CFSwapInt32HostToLittle(n);    
     
-    bool successful = tchdbput(db, &key, sizeof(UInt32), [d buffer], [d length]);
+    bool successful = tchdbput(db, BNRKeyData(&key), BNRKeyLength(key), [d buffer], [d length]);
     if (!successful) {
         int ecode = tchdbecode(db);
         NSString *message = [NSString stringWithFormat:@"tchdbput in updateData: %s", tchdberrmsg(ecode)];
@@ -182,13 +176,12 @@
 #pragma mark Fetching
 
 - (BNRDataBuffer *)dataForClass:(Class)c 
-                          rowID:(UInt32)n
+                         rowKey:(BNRObjectKey)key
 {
     TCHDB * db = [self fileForClass:c];
-    UInt32 key = CFSwapInt32HostToLittle(n);
     
     int bufferSize;
-    void *data = tchdbget(db, &key, sizeof(UInt32), &bufferSize);
+    void *data = tchdbget(db, BNRKeyData(&key), BNRKeyLength(key), &bufferSize);
     
     if (data == NULL) {
         return nil;

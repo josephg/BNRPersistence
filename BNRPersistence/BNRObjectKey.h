@@ -19,23 +19,33 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
-#import <Foundation/Foundation.h>
-#import "BNRObjectKey.h"
 
-@class BNRModel;
-@class BNRStoredObject;
+typedef struct {
+    const void *data;
+    UInt32 length;
+} BNRObjectKey;
 
-/*! BNRIndexManager is an abstract class. */
+#if __cplusplus
+extern "C" {
+#endif
 
-@interface BNRIndexManager : NSObject {
-}
-- (UInt32)countOfRowsInClass:(Class)c 
-                matchingText:(NSString *)toMatch
-                      forKey:(NSString *)key
-                        list:(BNRObjectKey **)listptr;
-- (void)insertObjectInIndexes:(BNRStoredObject *)obj;
-- (void)deleteObjectFromIndexes:(BNRStoredObject *)obj;
-- (void)updateObjectInIndexes:(BNRStoredObject *)obj;
-- (void)close;
+BNRObjectKey BNRMakeKeyFromId(UInt32 rowId);
+BNRObjectKey BNRMakeKeyFromBytes(const void *data, UInt32 length);
+BNRObjectKey BNRMakeKeyFromBytesNoCopy(const void *data, UInt32 length);
+void BNRFreeKey(BNRObjectKey key);
 
-@end
+UInt32 BNRKeyHash(BNRObjectKey key);
+BOOL BNREqualsKey(BNRObjectKey key1, BNRObjectKey key2);
+
+UInt32 BNRKeyRowId(BNRObjectKey key);
+
+BNRObjectKey BNRCloneKey(BNRObjectKey key);
+
+UInt32 BNRKeyLength(BNRObjectKey key);
+const void *BNRKeyData(BNRObjectKey *key);
+
+BOOL BNRKeyIsNull(BNRObjectKey key);
+
+#if __cplusplus
+} // extern "C"
+#endif

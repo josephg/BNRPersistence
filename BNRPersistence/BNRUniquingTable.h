@@ -21,6 +21,8 @@
 // THE SOFTWARE.
 
 #import <Foundation/Foundation.h>
+#import "BNRObjectKey.h"
+
 @class BNRStoredObject;
 
 struct UniquingListNode 
@@ -31,8 +33,8 @@ struct UniquingListNode
 
 /*! 
  @class BNRUniquingTable
- @abstract Essentially a dictionary that maps (Class, int) -> BNRStoredObject.  
- (Class, int) pairs must be unique.  It is implemented as a hash table.
+ @abstract Essentially a dictionary that maps (Class, BRNObjectKey) -> BNRStoredObject.  
+ (Class, BRNObjectKey) pairs must be unique.  It is implemented as a hash table.
  */
 
 // FIXME: this hash table has a fixed number of buckets.  It should grow as the need
@@ -43,8 +45,10 @@ struct UniquingListNode
     struct UniquingListNode **table;
     
 }
-- (BNRStoredObject *)objectForClass:(Class)c rowID:(UInt32)row;
-- (void)setObject:(BNRStoredObject *)obj forClass:(Class)c rowID:(UInt32)row;
-- (void)removeObjectForClass:(Class)c rowID:(UInt32)row;
+- (BNRStoredObject *)objectForClass:(Class)c rowKey:(BNRObjectKey)key;
+- (void)setObject:(BNRStoredObject *)obj forClass:(Class)c rowKey:(BNRObjectKey)key;
+- (void)setObject:(BNRStoredObject *)obj;
+- (void)removeObjectForClass:(Class)c rowKey:(BNRObjectKey)key;
+
 - (void)makeAllObjectsPerformSelector:(SEL)s;
 @end

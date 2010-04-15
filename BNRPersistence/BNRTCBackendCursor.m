@@ -38,28 +38,26 @@
     return self;
 }
 
-- (UInt32)nextBuffer:(BNRDataBuffer *)buff
+- (BNRObjectKey)nextBuffer:(BNRDataBuffer *)dataBuffer
 {
-    UInt32 result;
-    UInt32 *buffer;
+    void *buffer;
     int size;
-    buffer = (UInt32 *)tchdbiternext(file, &size);
+    buffer = tchdbiternext(file, &size);
 
     if (!buffer) {
-        return 0;
+        return BNRMakeKeyFromId(0);
     }
-    
-    result = CFSwapInt32LittleToHost(*buffer);
 
     // Avoid fetching data if possible.
-    if (nil != buff) {
+    if (nil != dataBuffer) {
         int bufferSize;
-        void *data = tchdbget(file, buffer, sizeof(UInt32), &bufferSize);
+        void *data = tchdbget(file, buffer, size, &bufferSize);
         
-        [buff setData:data
-               length:bufferSize];
+        [dataBuffer setData:data
+                     length:bufferSize];
     }
-    return result;
+    
+    return BNRMakeKeyFromBytes(buffer, size);
 }
 
 @end

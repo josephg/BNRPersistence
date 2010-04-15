@@ -49,11 +49,14 @@
 
 @implementation BNRStoredObject
 // NOT the designated initializer, just a convenience for BNRStore.
-- (id)initWithStore:(BNRStore *)s rowID:(UInt32)n buffer:(BNRDataBuffer *)buffer {
+- (id)initWithStore:(BNRStore *)s
+             rowKey:(BNRObjectKey)k
+             buffer:(BNRDataBuffer *)buffer {
     self = [self init];
     // Known to return non-nil, so no test.
     store = s;
-    rowID = n;
+    // Can we do this without copying the key?
+    [self setKey:k];
     if (nil != buffer) {
         
         if ([s usesPerInstanceVersioning]) {
@@ -119,11 +122,33 @@
 
 - (UInt32)rowID
 {
-    return rowID;
+    return BNRKeyRowId(key);
 }
+
 - (void)setRowID:(UInt32)n
 {
-    rowID = n;
+    key = BNRMakeKeyFromId(n);
+}
+
+- (BNRObjectKey)rowKey
+{
+    return key;
+}
+
+- (void)setKey:(BNRObjectKey)newKey
+{
+    BNRFreeKey(key);    
+    key = BNRCloneKey(newKey);
+}
+
+- (void)setKeyNoCopy:(BNRObjectKey)newKey
+{
+    BNRFreeKey(key);
+    key = newKey;
+}
+
+- (BOOL)hasKey {
+    return !BNRKeyIsNull(key);
 }
 
 - (BOOL)hasContent
@@ -139,12 +164,12 @@
 }
 - (void)fetchContent
 {
-    if (0U == rowID) return;
+    if (BNRKeyIsNull(key)) return;
 
     BNRStore *s = [self store];
     BNRStoreBackend *backend = [s backend];
     BNRDataBuffer *d = [backend dataForClass:[self class]
-                                       rowID:[self rowID]];
+                                      rowKey:[self rowKey]];
     if (!d) return;
     
     BNRClassMetaData *metaData = [s metaDataForClass:[self class]];
@@ -182,7 +207,8 @@
 - (void)dealloc
 {
     BNRUniquingTable *uniquingTable = [store uniquingTable];
-    [uniquingTable removeObjectForClass:[self class] rowID:[self rowID]];
+    [uniquingTable removeObjectForClass:[self class] rowKey:[self rowKey]];
+    BNRFreeKey(key);
     [super dealloc];
 }
 

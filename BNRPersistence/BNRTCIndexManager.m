@@ -178,7 +178,7 @@
 - (UInt32)countOfRowsInClass:(Class)c 
                 matchingText:(NSString *)toMatch
                       forKey:(NSString *)key
-                        list:(UInt32 **)listPtr
+                        list:(BNRObjectKey **)listptr
 {
     TCIDB *ti = [self textIndexForClass:c 
                                     key:key];

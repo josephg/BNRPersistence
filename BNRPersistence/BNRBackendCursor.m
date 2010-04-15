@@ -23,9 +23,10 @@
 #import "BNRBackendCursor.h"
 
 @implementation BNRBackendCursor
-- (UInt32)nextBuffer:(BNRDataBuffer *)c
+
+- (BNRObjectKey)nextBuffer:(BNRDataBuffer *)c
 {
-    return 0;
+    return BNRMakeKeyFromId(0);
 }
 
 @end

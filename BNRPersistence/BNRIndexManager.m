@@ -26,7 +26,7 @@
 - (UInt32)countOfRowsInClass:(Class)c 
                 matchingText:(NSString *)toMatch
                       forKey:(NSString *)key
-                        list:(UInt32 **)listptr
+                        list:(BNRObjectKey **)listptr
 {
     return 0; 
 }

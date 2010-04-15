@@ -148,6 +148,13 @@
 		93D50A1E110D51E000E5D2F0 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 08FB779EFE84155DC02AAC07 /* Foundation.framework */; };
 		93D50A1F110D51E000E5D2F0 /* libtokyocabinet.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 93D5050A110B8AB300E5D2F0 /* libtokyocabinet.a */; };
 		93D50A2A110D520D00E5D2F0 /* SimpleFetchTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 93D50A29110D520D00E5D2F0 /* SimpleFetchTest.m */; };
+		FD3D948C1176CDEA0074AD51 /* BNRObjectKey.m in Sources */ = {isa = PBXBuildFile; fileRef = FD3D948B1176CDEA0074AD51 /* BNRObjectKey.m */; };
+		FD3D948D1176CDEA0074AD51 /* BNRObjectKey.m in Sources */ = {isa = PBXBuildFile; fileRef = FD3D948B1176CDEA0074AD51 /* BNRObjectKey.m */; };
+		FD3D948E1176CDEA0074AD51 /* BNRObjectKey.m in Sources */ = {isa = PBXBuildFile; fileRef = FD3D948B1176CDEA0074AD51 /* BNRObjectKey.m */; };
+		FD3D948F1176CDEA0074AD51 /* BNRObjectKey.m in Sources */ = {isa = PBXBuildFile; fileRef = FD3D948B1176CDEA0074AD51 /* BNRObjectKey.m */; };
+		FD3D94901176CDEA0074AD51 /* BNRObjectKey.m in Sources */ = {isa = PBXBuildFile; fileRef = FD3D948B1176CDEA0074AD51 /* BNRObjectKey.m */; };
+		FD3D94911176CDEA0074AD51 /* BNRObjectKey.m in Sources */ = {isa = PBXBuildFile; fileRef = FD3D948B1176CDEA0074AD51 /* BNRObjectKey.m */; };
+		FD3D94921176CDEA0074AD51 /* BNRObjectKey.m in Sources */ = {isa = PBXBuildFile; fileRef = FD3D948B1176CDEA0074AD51 /* BNRObjectKey.m */; };
 		FD3DF48C117056810025E63E /* libcrypto.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = FD3DF48B117056740025E63E /* libcrypto.dylib */; };
 		FD3DF48D117056840025E63E /* libcrypto.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = FD3DF48B117056740025E63E /* libcrypto.dylib */; };
 		FD3DF48E117056960025E63E /* libcrypto.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = FD3DF48B117056740025E63E /* libcrypto.dylib */; };
@@ -292,6 +299,8 @@
 		93D50956110D4A0F00E5D2F0 /* SimpleInsertTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SimpleInsertTest.m; sourceTree = SOURCE_ROOT; };
 		93D50A23110D51E000E5D2F0 /* SimpleFetchTest */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = SimpleFetchTest; sourceTree = BUILT_PRODUCTS_DIR; };
 		93D50A29110D520D00E5D2F0 /* SimpleFetchTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SimpleFetchTest.m; sourceTree = SOURCE_ROOT; };
+		FD3D948A1176CDEA0074AD51 /* BNRObjectKey.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = BNRObjectKey.h; path = ../BNRPersistence/BNRObjectKey.h; sourceTree = SOURCE_ROOT; };
+		FD3D948B1176CDEA0074AD51 /* BNRObjectKey.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = BNRObjectKey.m; path = ../BNRPersistence/BNRObjectKey.m; sourceTree = SOURCE_ROOT; };
 		FD3DF488117056440025E63E /* BNRCrypto.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = BNRCrypto.h; path = ../BNRPersistence/BNRCrypto.h; sourceTree = SOURCE_ROOT; };
 		FD3DF489117056440025E63E /* BNRCrypto.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = BNRCrypto.m; path = ../BNRPersistence/BNRCrypto.m; sourceTree = SOURCE_ROOT; };
 		FD3DF48B117056740025E63E /* libcrypto.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libcrypto.dylib; path = usr/lib/libcrypto.dylib; sourceTree = SDKROOT; };
@@ -470,6 +479,8 @@
 				934ECFC6111B3C7F00F8C0E5 /* BNRIndexManager.m */,
 				9324D3651129AB7D00E8C193 /* BNRTCIndexManager.h */,
 				9324D3661129AB7D00E8C193 /* BNRTCIndexManager.m */,
+				FD3D948A1176CDEA0074AD51 /* BNRObjectKey.h */,
+				FD3D948B1176CDEA0074AD51 /* BNRObjectKey.m */,
 			);
 			name = BNRPersistence;
 			sourceTree = "<group>";
@@ -637,6 +648,7 @@
 				934ECFC7111B3C7F00F8C0E5 /* BNRIndexManager.m in Sources */,
 				FD3DF499117056DB0025E63E /* BNRCrypto.m in Sources */,
 				FD3DF4CA117057CA0025E63E /* BNRDataBuffer+Encryption.m in Sources */,
+				FD3D94911176CDEA0074AD51 /* BNRObjectKey.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -661,6 +673,7 @@
 				937F320711318EA60035B7EC /* FullTextInsertTest.m in Sources */,
 				FD3DF49A117056DF0025E63E /* BNRCrypto.m in Sources */,
 				FD3DF4CB117057CA0025E63E /* BNRDataBuffer+Encryption.m in Sources */,
+				FD3D94901176CDEA0074AD51 /* BNRObjectKey.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -685,6 +698,7 @@
 				937F33341131AB210035B7EC /* FullTextFetchText.m in Sources */,
 				FD3DF49B117056E30025E63E /* BNRCrypto.m in Sources */,
 				FD3DF4CC117057CA0025E63E /* BNRDataBuffer+Encryption.m in Sources */,
+				FD3D94921176CDEA0074AD51 /* BNRObjectKey.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -709,6 +723,7 @@
 				934ECFCA111B3C7F00F8C0E5 /* BNRIndexManager.m in Sources */,
 				FD3DF495117056CE0025E63E /* BNRCrypto.m in Sources */,
 				FD3DF4C6117057CA0025E63E /* BNRDataBuffer+Encryption.m in Sources */,
+				FD3D948C1176CDEA0074AD51 /* BNRObjectKey.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -733,6 +748,7 @@
 				934ECFCB111B3C7F00F8C0E5 /* BNRIndexManager.m in Sources */,
 				FD3DF496117056D10025E63E /* BNRCrypto.m in Sources */,
 				FD3DF4C7117057CA0025E63E /* BNRDataBuffer+Encryption.m in Sources */,
+				FD3D948E1176CDEA0074AD51 /* BNRObjectKey.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -757,6 +773,7 @@
 				934ECFC9111B3C7F00F8C0E5 /* BNRIndexManager.m in Sources */,
 				FD3DF497117056D50025E63E /* BNRCrypto.m in Sources */,
 				FD3DF4C8117057CA0025E63E /* BNRDataBuffer+Encryption.m in Sources */,
+				FD3D948F1176CDEA0074AD51 /* BNRObjectKey.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -781,6 +798,7 @@
 				934ECFC8111B3C7F00F8C0E5 /* BNRIndexManager.m in Sources */,
 				FD3DF498117056D70025E63E /* BNRCrypto.m in Sources */,
 				FD3DF4C9117057CA0025E63E /* BNRDataBuffer+Encryption.m in Sources */,
+				FD3D948D1176CDEA0074AD51 /* BNRObjectKey.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

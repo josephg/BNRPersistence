@@ -200,21 +200,27 @@
 - (BNRStoredObject *)readObjectReferenceOfClass:(Class)c
                                      usingStore:(BNRStore *)s
 {
-    UInt32 rowID = [self readUInt32];
-    if (rowID == 0) {
+    UInt32 len = [self readUInt32];
+    if (len == 0) {
         NSLog(@"reading nil object reference");
         return nil;
     }
+    
+    BNRObjectKey key = BNRMakeKeyFromBytes(cursor, len);
+    cursor += len;
+
     BNRStoredObject *obj = [s objectForClass:c
-                                       rowID:rowID
+                                      rowKey:key
                                 fetchContent:NO];
     return obj;
 }
 
 - (void)writeObjectReference:(BNRStoredObject *)obj
 {
-    UInt32 rowID = [obj rowID];
-    [self writeUInt32:rowID];
+    BNRObjectKey key = [obj rowKey];
+    UInt32 keyLength = BNRKeyLength(key);
+    [self writeUInt32:keyLength];
+    [self copyFrom:BNRKeyData(&key) length:keyLength];
 }
 
 - (BNRStoredObject *)readObjectReferenceOfUnknownClassUsingStore:(BNRStore *)s

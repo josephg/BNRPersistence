@@ -21,6 +21,7 @@
 // THE SOFTWARE.
 
 #import <Foundation/Foundation.h>
+#import "BNRObjectKey.h"
 @class BNRBackendCursor;
 @class BNRDataBuffer;
 
@@ -42,21 +43,21 @@
 
 #pragma mark Writing changes
 
-- (void)insertData:(BNRDataBuffer *)attNames 
+- (void)insertData:(BNRDataBuffer *)attNames
           forClass:(Class)c
-             rowID:(UInt32)n;
+            rowKey:(BNRObjectKey)key;
 
 - (void)deleteDataForClass:(Class)c
-                     rowID:(UInt32)n;
+                    rowKey:(BNRObjectKey)key;
                   
 - (void)updateData:(BNRDataBuffer *)d 
           forClass:(Class)c 
-             rowID:(UInt32)n;
+            rowKey:(BNRObjectKey)key;
 
 #pragma mark Fetching
 
 - (BNRDataBuffer *)dataForClass:(Class)c 
-                   rowID:(UInt32)n;
+                         rowKey:(BNRObjectKey)key;
 
 - (BNRBackendCursor *)cursorForClass:(Class)c;
 

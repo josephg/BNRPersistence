@@ -22,6 +22,8 @@
 
 
 #import <Foundation/Foundation.h>
+#import "BNRObjectKey.h"
+
 @class BNRClassDictionary;
 @class BNRUniquingTable;
 @class BNRStoreBackend;
@@ -41,7 +43,9 @@
 @end
 
 #if NS_BLOCKS_AVAILABLE
-typedef void(^BNRStoredObjectIterBlock)(UInt32 rowID, BNRStoredObject *object, BOOL *stop);
+typedef void(^BNRStoredObjectIterBlock)(BNRObjectKey key,
+                                        BNRStoredObject *object,
+                                        BOOL *stop);
 #endif
 
 //! BNRStore
@@ -92,6 +96,14 @@ typedef void(^BNRStoredObjectIterBlock)(UInt32 rowID, BNRStoredObject *object, B
 // |yn| does not affect any content the object already has.
 - (BNRStoredObject *)objectForClass:(Class)c 
                               rowID:(UInt32)n 
+                       fetchContent:(BOOL)yn;
+//
+//- (BNRStoredObject *)objectForClass:(Class)c 
+//                            rowName:(NSString *)key
+//                       fetchContent:(BOOL)yn;
+
+- (BNRStoredObject *)objectForClass:(Class)c 
+                             rowKey:(BNRObjectKey)key
                        fetchContent:(BOOL)yn;
 
 // Fetches all stored objects of a particular class.

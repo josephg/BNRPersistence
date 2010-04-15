@@ -21,6 +21,7 @@
 // THE SOFTWARE.
 
 #import <Foundation/Foundation.h>
+#import "BNRObjectKey.h"
 
 @class BNRDataBuffer;
 
@@ -38,8 +39,9 @@
 /*!
  @method nextBuffer:
  @abstract returns the key and fills the buffer 'c' with the associated data.
- @discussion This method is called repeatedly until it returns 0.
+ @discussion This method is called repeatedly until it returns NULL.
  @param c An empty databuffer to be filled with data
  */
-- (UInt32)nextBuffer:(BNRDataBuffer *)c;
+- (BNRObjectKey)nextBuffer:(BNRDataBuffer *)c;
+
 @end

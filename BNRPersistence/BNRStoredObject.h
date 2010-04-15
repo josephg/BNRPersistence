@@ -22,6 +22,8 @@
 
 #import <Foundation/Foundation.h>
 #import "BNRStore.h"
+#import "BNRObjectKey.h"
+
 @class BNRDatamaker;
 
 /*! BNRStoredObject is the superclass for all objects that get saved into the store */
@@ -31,9 +33,10 @@
     // Weak reference
     __weak BNRStore *store;
     
-    // rowID is given out by the store. No other instance
-    // of the class will have the same rowID
-    UInt32 rowID;
+    // The key will be given out by the store if it is not set beforehand.
+    // The key is unique to the class.
+    BNRObjectKey key;
+    
     // The least significant bit of status is used for hasContent
     // The other 31 are used for the retain count.
     UInt32 status;
@@ -72,9 +75,16 @@
 - (void)setStore:(BNRStore *)s;
 - (BNRStore *)store;
 
-#pragma mark Row ID
+#pragma mark Row Key
 - (UInt32)rowID;
 - (void)setRowID:(UInt32)n;
+
+- (BNRObjectKey)rowKey;
+- (void)setKey:(BNRObjectKey)newKey;
+- (void)setKeyNoCopy:(BNRObjectKey)newKey;
+
+// Does the object have a key set already?
+- (BOOL)hasKey;
 
 #pragma mark Has Content
 // Is the object fetched?

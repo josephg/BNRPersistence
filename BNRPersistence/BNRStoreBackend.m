@@ -48,22 +48,22 @@
 
 #pragma mark Writing changes
 
-- (void)insertData:(BNRDataBuffer *)attNames 
+- (void)insertData:(BNRDataBuffer *)attNames
           forClass:(Class)c
-             rowID:(UInt32)n
+            rowKey:(BNRObjectKey)key
 {
     NSLog(@"insertData:forClass:rowID: not defined for %@", self);
 }
 
 - (void)deleteDataForClass:(Class)c
-                     rowID:(UInt32)n
+                    rowKey:(BNRObjectKey)key
 {
     NSLog(@"deleteDataForClass:rowID: not defined for %@", self);
 }
 
 - (void)updateData:(BNRDataBuffer *)d 
           forClass:(Class)c 
-             rowID:(UInt32)n
+            rowKey:(BNRObjectKey)key
 {
     NSLog(@"updateData:forClass:rowID: not defined for %@", self);
 }
@@ -71,7 +71,7 @@
 #pragma mark Fetching
 
 - (BNRDataBuffer *)dataForClass:(Class)c 
-                          rowID:(UInt32)n
+                         rowKey:(BNRObjectKey)key
 {
     return nil;
 }
